@@ -49,7 +49,8 @@ final class RefundUnitsAction
     public function __invoke(Request $request): Response
     {
         try {
-            $this->commandBus->dispatch($this->commandCreator->fromRequest($request));
+            $ref = $this->commandCreator->fromRequest($request);
+            $this->commandBus->dispatch($ref);
 
             $this->session->getFlashBag()->add('success', 'sylius_refund.units_successfully_refunded');
         } catch (InvalidRefundAmountException $exception) {
@@ -59,7 +60,6 @@ final class RefundUnitsAction
         } catch (HandlerFailedException $exception) {
             /** @var \Exception $previousException */
             $previousException = $exception->getPrevious();
-
             $this->provideErrorMessage($previousException);
 
             $this->logger->error($previousException->getMessage());

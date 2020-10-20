@@ -20,6 +20,9 @@ final class RefundUnitsHandler
     /** @var RefunderInterface */
     private $orderShipmentsRefunder;
 
+    /** @var RefunderInterface */
+    private $orderServiceChargeRefunder;
+
     /** @var MessageBusInterface */
     private $eventBus;
 
@@ -32,12 +35,14 @@ final class RefundUnitsHandler
     public function __construct(
         RefunderInterface $orderUnitsRefunder,
         RefunderInterface $orderShipmentsRefunder,
+        RefunderInterface $orderServiceChargeRefunder,
         MessageBusInterface $eventBus,
         OrderRepositoryInterface $orderRepository,
         RefundUnitsCommandValidatorInterface $refundUnitsCommandValidator
     ) {
         $this->orderUnitsRefunder = $orderUnitsRefunder;
         $this->orderShipmentsRefunder = $orderShipmentsRefunder;
+        $this->orderServiceChargeRefunder = $orderServiceChargeRefunder;
         $this->eventBus = $eventBus;
         $this->orderRepository = $orderRepository;
         $this->refundUnitsCommandValidator = $refundUnitsCommandValidator;
@@ -55,11 +60,13 @@ final class RefundUnitsHandler
         $refundedTotal = 0;
         $refundedTotal += $this->orderUnitsRefunder->refundFromOrder($command->units(), $orderNumber);
         $refundedTotal += $this->orderShipmentsRefunder->refundFromOrder($command->shipments(), $orderNumber);
+        $refundedTotal += $this->orderServiceChargeRefunder->refundFromOrder($command->serviceCharges(), $orderNumber);
 
         $this->eventBus->dispatch(new UnitsRefunded(
             $orderNumber,
             $command->units(),
             $command->shipments(),
+            $command->serviceCharges(),
             $command->paymentMethodId(),
             $refundedTotal,
             $order->getCurrencyCode(),

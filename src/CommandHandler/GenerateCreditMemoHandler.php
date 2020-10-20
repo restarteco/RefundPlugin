@@ -43,12 +43,12 @@ final class GenerateCreditMemoHandler
         $orderNumber = $command->orderNumber();
         /** @var OrderInterface $order */
         $order = $this->orderRepository->findOneByNumber($orderNumber);
-
         $creditMemo = $this->creditMemoGenerator->generate(
             $order,
             $command->total(),
             $command->units(),
             $command->shipments(),
+            $command->serviceCharges(),
             $command->comment()
         );
 

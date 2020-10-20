@@ -12,6 +12,8 @@ final class RefundType extends Enum
 
     public const SHIPMENT = 'shipment';
 
+    public const SERVICE_CHARGE = 'service_charge';
+
     public static function orderItemUnit(): self
     {
         return new self(self::ORDER_ITEM_UNIT);
@@ -20,5 +22,10 @@ final class RefundType extends Enum
     public static function shipment(): self
     {
         return new self(self::SHIPMENT);
+    }
+
+    public static function serviceCharge(): self
+    {
+        return new self(self::SERVICE_CHARGE);
     }
 }

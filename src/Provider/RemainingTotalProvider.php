@@ -60,13 +60,24 @@ final class RemainingTotalProvider implements RemainingTotalProviderInterface
             return $orderItemUnit->getTotal();
         }
 
-        /** @var AdjustmentInterface $shipment */
-        $shipment = $this->adjustmentRepository->findOneBy([
-            'id' => $id,
-            'type' => AdjustmentInterface::SHIPPING_ADJUSTMENT,
-        ]);
-        Assert::notNull($shipment);
+        if ($refundType->equals(RefundType::shipment())) {
+            /** @var AdjustmentInterface $shipment */
+            $shipment = $this->adjustmentRepository->findOneBy([
+                'id' => $id,
+                'type' => AdjustmentInterface::SHIPPING_ADJUSTMENT,
+            ]);
+            Assert::notNull($shipment);
+    
+            return $shipment->getAmount();
+        }
 
-        return $shipment->getAmount();
+        /** @var AdjustmentInterface $shipment */
+        $serviceCharge = $this->adjustmentRepository->findOneBy([
+            'id' => $id,
+            'originCode' => 'service_charge',
+        ]);
+        Assert::notNull($serviceCharge);
+
+        return $serviceCharge->getAmount();
     }
 }

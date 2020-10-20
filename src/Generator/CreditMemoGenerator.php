@@ -23,6 +23,9 @@ final class CreditMemoGenerator implements CreditMemoGeneratorInterface
     /** @var LineItemsConverterInterface */
     private $shipmentLineItemsConverter;
 
+    /** @var LineItemsConverterInterface */
+    private $serviceChargeLineItemsConverter;
+
     /** @var TaxItemsGeneratorInterface */
     private $taxItemsGenerator;
 
@@ -38,6 +41,7 @@ final class CreditMemoGenerator implements CreditMemoGeneratorInterface
     public function __construct(
         LineItemsConverterInterface $lineItemsConverter,
         LineItemsConverterInterface $shipmentLineItemsConverter,
+        LineItemsConverterInterface $serviceChargeLineItemsConverter,
         TaxItemsGeneratorInterface $taxItemsGenerator,
         NumberGenerator $creditMemoNumberGenerator,
         CurrentDateTimeProviderInterface $currentDateTimeProvider,
@@ -45,6 +49,7 @@ final class CreditMemoGenerator implements CreditMemoGeneratorInterface
     ) {
         $this->lineItemsConverter = $lineItemsConverter;
         $this->shipmentLineItemsConverter = $shipmentLineItemsConverter;
+        $this->serviceChargeLineItemsConverter = $serviceChargeLineItemsConverter;
         $this->taxItemsGenerator = $taxItemsGenerator;
         $this->creditMemoNumberGenerator = $creditMemoNumberGenerator;
         $this->currentDateTimeProvider = $currentDateTimeProvider;
@@ -56,6 +61,7 @@ final class CreditMemoGenerator implements CreditMemoGeneratorInterface
         int $total,
         array $units,
         array $shipments,
+        array $serviceCharges,
         string $comment
     ): CreditMemoInterface {
         /** @var ChannelInterface $channel */
@@ -63,7 +69,8 @@ final class CreditMemoGenerator implements CreditMemoGeneratorInterface
 
         $lineItems = array_merge(
             $this->lineItemsConverter->convert($units),
-            $this->shipmentLineItemsConverter->convert($shipments)
+            $this->shipmentLineItemsConverter->convert($shipments),
+            $this->serviceChargeLineItemsConverter->convert($serviceCharges)
         );
 
         return new CreditMemo(
