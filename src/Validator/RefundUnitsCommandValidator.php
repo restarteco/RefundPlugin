@@ -31,6 +31,7 @@ final class RefundUnitsCommandValidator implements RefundUnitsCommandValidatorIn
             throw OrderNotAvailableForRefundingException::withOrderNumber($command->orderNumber());
         }
 
+        $this->refundAmountValidator->validateUnits($command->serviceCharges(), RefundType::serviceCharge());
         $this->refundAmountValidator->validateUnits($command->units(), RefundType::orderItemUnit());
         $this->refundAmountValidator->validateUnits($command->shipments(), RefundType::shipment());
     }
